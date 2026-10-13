@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ACME · New incident report</title>
+<style>
+  :root {
+    --acme-ink: #1f2a37;
+    --acme-ink-soft: #4b5563;
+    --acme-muted: #6b7280;
+    --acme-line: #d9dee5;
+    --acme-bg: #f3f4f6;
+    --acme-card: #ffffff;
+    --acme-brand: #c2410c;
+    --acme-brand-dark: #9a3412;
+    --acme-accent: #1d4ed8;
+    --acme-accent-dark: #1e40af;
+    --acme-ok: #15803d;
+    --acme-ok-bg: #ecfdf5;
+    --acme-error: #b91c1c;
+    --acme-error-bg: #fef2f2;
+    --acme-focus: #93c5fd;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font: 15px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--acme-ink);
+    background: var(--acme-bg);
+    min-height: 100vh;
+  }
+
+  /* ---- header */
+  .acme-topbar {
+    background: var(--acme-ink);
+    color: #fff;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 18px;
+  }
+  .acme-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #fff;
+  }
+  .acme-logo-mark {
+    width: 28px; height: 28px;
+    background: var(--acme-brand);
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: .5px;
+  }
+  .acme-logo-name { font-weight: 700; letter-spacing: 1.5px; font-size: 14px; }
+  .acme-topbar-divider { width: 1px; height: 24px; background: rgba(255,255,255,.25); }
+  .acme-topbar-app { font-size: 14px; color: rgba(255,255,255,.85); }
+  .acme-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; font-size: 13px; color: rgba(255,255,255,.75); }
+  .acme-env {
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 12px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  .acme-user { display: flex; align-items: center; gap: 8px; }
+  .acme-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #334155; color: #fff;
+    display: grid; place-items: center;
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* ---- page */
+  .acme-page { max-width: 880px; margin: 0 auto; padding: 24px 16px 60px; }
+  .acme-breadcrumb { font-size: 13px; color: var(--acme-muted); margin: 0 0 14px; }
+  .acme-breadcrumb a { color: var(--acme-accent); text-decoration: none; }
+  .acme-breadcrumb a:hover { text-decoration: underline; }
+  .acme-page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .acme-page-head h1 { font-size: 24px; margin: 0 0 4px; font-weight: 700; }
+  .acme-page-head p { margin: 0; color: var(--acme-ink-soft); }
+  .acme-badge {
+    font-size: 12px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase;
+    color: var(--acme-brand-dark); background: #ffedd5; border: 1px solid #fdba74;
+    border-radius: 999px; padding: 3px 10px; white-space: nowrap;
+  }
+
+  /* ---- card and sections */
+  .acme-card {
+    background: var(--acme-card);
+    border: 1px solid var(--acme-line);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+    overflow: hidden;
+  }
+  .acme-section { padding: 22px 24px; border-top: 1px solid var(--acme-line); }
+  .acme-section:first-child { border-top: 0; }
+  .acme-section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .acme-section-number {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--acme-ink); color: #fff;
+    display: inline-grid; place-items: center;
+    font-size: 12px; font-weight: 700;
+    position: relative; top: 2px;
+  }
+  .acme-section h2 { font-size: 16px; margin: 0; font-weight: 700; }
+  .acme-section-hint { font-size: 13px; color: var(--acme-muted); margin: 0 0 14px 34px; }
+
+  .acme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+  .acme-field { display: flex; flex-direction: column; gap: 6px; }
+  .acme-field.acme-field-wide { grid-column: 1 / -1; }
+  .acme-field label { font-size: 13px; font-weight: 600; color: var(--acme-ink); }
+  .acme-required { color: var(--acme-error); font-weight: 700; margin-left: 2px; }
+  .acme-field input[type="text"],
+  .acme-field textarea {
+    font: inherit;
+    color: var(--acme-ink);
+    background: #fff;
+    border: 1px solid #b8c0cc;
+    border-radius: 6px;
+    padding: 9px 11px;
+    width: 100%;
+    transition: border-color .12s, box-shadow .12s;
+  }
+  .acme-field textarea { resize: vertical; min-height: 120px; line-height: 1.45; }
+  .acme-field input:focus, .acme-field textarea:focus {
+    outline: none;
+    border-color: var(--acme-accent);
+    box-shadow: 0 0 0 3px var(--acme-focus);
+  }
+  .acme-field.acme-invalid input, .acme-field.acme-invalid textarea { border-color: var(--acme-error); }
+  .acme-hint { font-size: 12px; color: var(--acme-muted); }
+  .acme-field-error { font-size: 12px; color: var(--acme-error); display: none; }
+  .acme-field.acme-invalid .acme-field-error { display: block; }
+
+  /* ---- footer of the form */
+  .acme-actions {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 18px 24px; background: #f9fafb; border-top: 1px solid var(--acme-line);
+  }
+  .acme-btn {
+    font: inherit; font-weight: 600; font-size: 14px;
+    border-radius: 6px; padding: 9px 16px; cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .acme-btn-primary { background: var(--acme-accent); color: #fff; }
+  .acme-btn-primary:hover { background: var(--acme-accent-dark); }
+  .acme-btn-secondary { background: #fff; color: var(--acme-ink); border-color: #b8c0cc; }
+  .acme-btn-secondary:hover { background: #f3f4f6; }
+  .acme-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--acme-focus); }
+  .acme-actions-note { font-size: 12px; color: var(--acme-muted); margin-left: auto; }
+
+  /* ---- banners */
+  .acme-banner { display: none; border-radius: 8px; padding: 12px 16px; margin: 0 0 16px; font-size: 14px; border: 1px solid; }
+  .acme-banner.acme-show { display: block; }
+  .acme-banner-ok { background: var(--acme-ok-bg); border-color: #86efac; color: var(--acme-ok); }
+  .acme-banner-error { background: var(--acme-error-bg); border-color: #fca5a5; color: var(--acme-error); }
+  .acme-banner strong { font-weight: 700; }
+  .acme-banner code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; background: rgba(0,0,0,.05); padding: 1px 5px; border-radius: 4px; }
+
+  .acme-footer { margin-top: 28px; font-size: 12px; color: var(--acme-muted); display: flex; gap: 14px; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    .acme-grid { grid-template-columns: 1fr; }
+    .acme-topbar-app, .acme-topbar-divider, .acme-env { display: none; }
+    .acme-section { padding: 18px 16px; }
+    .acme-actions { padding: 16px; }
+    .acme-section-hint { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="acme-topbar">
+  <a class="acme-logo" href="#" aria-label="ACME home">
+    <span class="acme-logo-mark" aria-hidden="true">A</span>
+    <span class="acme-logo-name">ACME</span>
+  </a>
+  <span class="acme-topbar-divider" aria-hidden="true"></span>
+  <span class="acme-topbar-app">Customer Operations · Incident reports</span>
+  <div class="acme-topbar-right">
+    <span class="acme-env">Internal</span>
+    <span class="acme-user"><span class="acme-avatar" aria-hidden="true">CS</span><span>Support agent</span></span>
+  </div>
+</header>
+
+<main class="acme-page">
+  <nav class="acme-breadcrumb" aria-label="Breadcrumb"><a href="#">Incident reports</a> &rsaquo; New report</nav>
+
+  <div class="acme-page-head">
+    <div>
+      <h1>New incident report</h1>
+      <p>File a report for a customer-facing incident at a partner restaurant. Reports are reviewed by the Partner Quality team within one business day.</p>
+    </div>
+    <span class="acme-badge">Form IR-01</span>
+  </div>
+
+  <div id="incident-submit-success" class="acme-banner acme-banner-ok" role="status" aria-live="polite"></div>
+  <div id="incident-submit-error" class="acme-banner acme-banner-error" role="alert"></div>
+
+  <form id="incident-report-form" class="acme-card" autocomplete="off" novalidate>
+
+    <section class="acme-section" id="incident-section-customer">
+      <div class="acme-section-head"><span class="acme-section-number" aria-hidden="true">1</span><h2>Customer</h2></div>
+      <p class="acme-section-hint">Who reported the incident. Use the details from the customer's message.</p>
+      <div class="acme-grid">
+        <div class="acme-field">
+          <label for="incident-customer-name">Customer name<span class="acme-required" aria-hidden="true">*</span></label>
+          <input type="text" id="incident-customer-name" name="customer_name" placeholder="Full name" required aria-describedby="incident-customer-name-error">
+          <span class="acme-field-error" id="incident-customer-name-error">Enter the customer's name.</span>
+        </div>
+        <div class="acme-field">
+          <label for="incident-customer-email">Customer email<span class="acme-required" aria-hidden="true">*</span></label>
+          <input type="text" id="incident-customer-email" name="customer_email" placeholder="name@example.com" inputmode="email" required aria-describedby="incident-customer-email-error">
+          <span class="acme-field-error" id="incident-customer-email-error">Enter a valid email address.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="acme-section" id="incident-section-restaurant">
+      <div class="acme-section-head"><span class="acme-section-number" aria-hidden="true">2</span><h2>Restaurant</h2></div>
+      <p class="acme-section-hint">The partner restaurant involved, and the address we notify.</p>
+      <div class="acme-grid">
+        <div class="acme-field">
+          <label for="incident-restaurant-name">Restaurant name<span class="acme-required" aria-hidden="true">*</span></label>
+          <input type="text" id="incident-restaurant-name" name="restaurant_name" placeholder="As listed on ACME" required aria-describedby="incident-restaurant-name-error">
+          <span class="acme-field-error" id="incident-restaurant-name-error">Enter the restaurant's name.</span>
+        </div>
+        <div class="acme-field">
+          <label for="incident-restaurant-email">Restaurant email</label>
+          <input type="text" id="incident-restaurant-email" name="restaurant_email" placeholder="manager@restaurant.com" inputmode="email" aria-describedby="incident-restaurant-email-hint incident-restaurant-email-error">
+          <span class="acme-hint" id="incident-restaurant-email-hint">The manager's or front-of-house address, if known.</span>
+          <span class="acme-field-error" id="incident-restaurant-email-error">Enter a valid email address, or leave this empty.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="acme-section" id="incident-section-details">
+      <div class="acme-section-head"><span class="acme-section-number" aria-hidden="true">3</span><h2>Incident</h2></div>
+      <p class="acme-section-hint">What happened, and what has been done so far.</p>
+      <div class="acme-grid">
+        <div class="acme-field">
+          <label for="incident-date">Date of the incident<span class="acme-required" aria-hidden="true">*</span></label>
+          <input type="text" id="incident-date" name="incident_date" placeholder="MM/DD/YYYY" inputmode="numeric" required aria-describedby="incident-date-hint incident-date-error">
+          <span class="acme-hint" id="incident-date-hint">The reservation date, not the date of the complaint.</span>
+          <span class="acme-field-error" id="incident-date-error">Enter a date as MM/DD/YYYY.</span>
+        </div>
+        <div class="acme-field acme-field-wide">
+          <label for="incident-summary">Summary of the incident<span class="acme-required" aria-hidden="true">*</span></label>
+          <textarea id="incident-summary" name="incident_summary" rows="6" placeholder="What the customer experienced, in their words where possible. Include the reservation details, what went wrong, and the impact." required aria-describedby="incident-summary-error"></textarea>
+          <span class="acme-field-error" id="incident-summary-error">Describe the incident.</span>
+        </div>
+        <div class="acme-field acme-field-wide">
+          <label for="incident-steps-taken">Steps taken<span class="acme-required" aria-hidden="true">*</span></label>
+          <textarea id="incident-steps-taken" name="incident_steps_taken" rows="6" placeholder="What has been done so far: refunds issued or escalated, the restaurant contacted, the customer's reply, open items." required aria-describedby="incident-steps-taken-error"></textarea>
+          <span class="acme-field-error" id="incident-steps-taken-error">List the steps taken so far.</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="acme-actions">
+      <button type="submit" class="acme-btn acme-btn-primary" id="incident-submit-button">Submit report</button>
+      <button type="button" class="acme-btn acme-btn-secondary" id="incident-clear-button">Clear form</button>
+      <span class="acme-actions-note"><span class="acme-required" aria-hidden="true">*</span> Required</span>
+    </div>
+  </form>
+
+  <footer class="acme-footer">
+    <span>ACME Internal Tools</span>
+    <span>Confidential: for ACME staff only</span>
+    <span>Questions: partner-quality@acme.example</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var form = document.getElementById('incident-report-form');
+  var okBanner = document.getElementById('incident-submit-success');
+  var errorBanner = document.getElementById('incident-submit-error');
+  var fields = [
+    { id: 'incident-customer-name', required: true },
+    { id: 'incident-customer-email', required: true, email: true },
+    { id: 'incident-restaurant-name', required: true },
+    { id: 'incident-restaurant-email', required: false, email: true },
+    { id: 'incident-date', required: true, date: true },
+    { id: 'incident-summary', required: true },
+    { id: 'incident-steps-taken', required: true }
+  ];
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var dateRe = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/(\d{4})$/;
+
+  function wrapper(el) { return el.closest('.acme-field'); }
+  function setInvalid(el, invalid) { wrapper(el).classList.toggle('acme-invalid', invalid); }
+  function validate(field) {
+    var el = document.getElementById(field.id);
+    var value = el.value.trim();
+    // a boolean, not whatever the last operand was: classList.toggle with undefined would toggle the class
+    var bad = !!((field.required && !value) ||
+                 (field.email && value && !emailRe.test(value)) ||
+                 (field.date && value && !dateRe.test(value)));
+    setInvalid(el, bad);
+    return !bad;
+  }
+  function hideBanners() {
+    okBanner.classList.remove('acme-show'); okBanner.textContent = '';
+    errorBanner.classList.remove('acme-show'); errorBanner.textContent = '';
+  }
+  function reference() {
+    var d = new Date();
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var seq = String(Math.floor(1000 + Math.random() * 9000));
+    return 'INC-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + seq;
+  }
+
+  fields.forEach(function (field) {
+    var el = document.getElementById(field.id);
+    el.addEventListener('input', function () { if (wrapper(el).classList.contains('acme-invalid')) validate(field); });
+  });
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    hideBanners();
+    var firstBad = null;
+    fields.forEach(function (field) { if (!validate(field) && !firstBad) firstBad = document.getElementById(field.id); });
+    if (firstBad) {
+      errorBanner.textContent = 'Some required details are missing or invalid. Check the highlighted fields.';
+      errorBanner.classList.add('acme-show');
+      firstBad.focus();
+      return;
+    }
+    var ref = reference();
+    var who = document.getElementById('incident-customer-name').value.trim();
+    var where = document.getElementById('incident-restaurant-name').value.trim();
+    okBanner.innerHTML = '<strong>Report submitted.</strong> Reference <code>' + ref + '</code> · ' +
+      who.replace(/</g, '&lt;') + ' at ' + where.replace(/</g, '&lt;') + '. The Partner Quality team has been notified.';
+    okBanner.classList.add('acme-show');
+    okBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('incident-clear-button').addEventListener('click', function () {
+    form.reset();
+    hideBanners();
+    fields.forEach(function (field) { setInvalid(document.getElementById(field.id), false); });
+    document.getElementById('incident-customer-name').focus();
+  });
+})();
+</script>
+</body>
+</html>
